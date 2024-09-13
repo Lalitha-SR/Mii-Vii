@@ -1,6 +1,27 @@
-import { Query, QueryOperators, BasicValueQuery, ArrayValueQuery, ValueQuery, NestedQuery, ShapeQuery, Options, createQueryTester, EqualsOperation, createQueryOperation, createEqualsOperation, createOperationTester } from "./core";
-declare const createDefaultQueryOperation: <TItem, TSchema extends TItem = TItem>(query: Query<TSchema>, ownerQuery: any, { compare, operations }?: Partial<Options>) => import("./core").QueryOperation<unknown>;
-declare const createDefaultQueryTester: <TItem, TSchema extends TItem = TItem>(query: Query<TSchema>, options?: Partial<Options>) => (item: unknown, key?: import("./utils").Key, owner?: any) => boolean;
-export { Query, QueryOperators, BasicValueQuery, ArrayValueQuery, ValueQuery, NestedQuery, ShapeQuery, EqualsOperation, createQueryTester, createOperationTester, createDefaultQueryOperation, createEqualsOperation, createQueryOperation, };
-export * from "./operations";
-export default createDefaultQueryTester;
+declare namespace getSideChannel {
+	type Key = unknown;
+	type ListNode<T> = {
+		key: Key;
+		next: ListNode<T>;
+		value: T;
+	};
+	type RootNode<T> = {
+		key: object;
+		next: null | ListNode<T>;
+	};
+	function listGetNode<T>(list: RootNode<T>, key: ListNode<T>['key']): ListNode<T> | void;
+	function listGet<T>(objects: RootNode<T>, key: ListNode<T>['key']): T | void;
+	function listSet<T>(objects: RootNode<T>, key: ListNode<T>['key'], value: T): void;
+	function listHas<T>(objects: RootNode<T>, key: ListNode<T>['key']): boolean;
+
+	type Channel = {
+		assert: (key: Key) => void;
+		has: (key: Key) => boolean;
+		get: <T>(key: Key) => T;
+		set: <T>(key: Key, value: T) => void;
+	}
+}
+
+declare function getSideChannel(): getSideChannel.Channel;
+
+export = getSideChannel;
