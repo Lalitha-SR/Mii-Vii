@@ -1,101 +1,68 @@
-# vary
+# tr46
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][travis-image]][travis-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
-
-Manipulate the HTTP Vary header
-
-## Installation
-
-This is a [Node.js](https://nodejs.org/en/) module available through the
-[npm registry](https://www.npmjs.com/). Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally): 
-
-```sh
-$ npm install vary
-```
+An JavaScript implementation of [Unicode Technical Standard #46: Unicode IDNA Compatibility Processing](https://unicode.org/reports/tr46/).
 
 ## API
 
-<!-- eslint-disable no-unused-vars -->
+### `toASCII(domainName[, options])`
 
-```js
-var vary = require('vary')
-```
+Converts a string of Unicode symbols to a case-folded Punycode string of ASCII symbols.
 
-### vary(res, field)
+Available options:
 
-Adds the given header `field` to the `Vary` response header of `res`.
-This can be a string of a single field, a string of a valid `Vary`
-header, or an array of multiple fields.
+* [`checkBidi`](#checkBidi)
+* [`checkHyphens`](#checkHyphens)
+* [`checkJoiners`](#checkJoiners)
+* [`processingOption`](#processingOption)
+* [`useSTD3ASCIIRules`](#useSTD3ASCIIRules)
+* [`verifyDNSLength`](#verifyDNSLength)
 
-This will append the header if not already listed, otherwise leaves
-it listed in the current location.
+### `toUnicode(domainName[, options])`
 
-<!-- eslint-disable no-undef -->
+Converts a case-folded Punycode string of ASCII symbols to a string of Unicode symbols.
 
-```js
-// Append "Origin" to the Vary header of the response
-vary(res, 'Origin')
-```
+Available options:
 
-### vary.append(header, field)
+* [`checkBidi`](#checkBidi)
+* [`checkHyphens`](#checkHyphens)
+* [`checkJoiners`](#checkJoiners)
+* [`processingOption`](#processingOption)
+* [`useSTD3ASCIIRules`](#useSTD3ASCIIRules)
 
-Adds the given header `field` to the `Vary` response header string `header`.
-This can be a string of a single field, a string of a valid `Vary` header,
-or an array of multiple fields.
+## Options
 
-This will append the header if not already listed, otherwise leaves
-it listed in the current location. The new header string is returned.
+### `checkBidi`
 
-<!-- eslint-disable no-undef -->
+Type: `boolean`
+Default value: `false`
+When set to `true`, any bi-directional text within the input will be checked for validation.
 
-```js
-// Get header string appending "Origin" to "Accept, User-Agent"
-vary.append('Accept, User-Agent', 'Origin')
-```
+### `checkHyphens`
 
-## Examples
+Type: `boolean`
+Default value: `false`
+When set to `true`, the positions of any hyphen characters within the input will be checked for validation.
 
-### Updating the Vary header when content is based on it
+### `checkJoiners`
 
-```js
-var http = require('http')
-var vary = require('vary')
+Type: `boolean`
+Default value: `false`
+When set to `true`, any word joiner characters within the input will be checked for validation.
 
-http.createServer(function onRequest (req, res) {
-  // about to user-agent sniff
-  vary(res, 'User-Agent')
+### `processingOption`
 
-  var ua = req.headers['user-agent'] || ''
-  var isMobile = /mobi|android|touch|mini/i.test(ua)
+Type: `string`
+Default value: `"nontransitional"`
+When set to `"transitional"`, symbols within the input will be validated according to the older IDNA2003 protocol. When set to `"nontransitional"`, the current IDNA2008 protocol will be used.
 
-  // serve site, depending on isMobile
-  res.setHeader('Content-Type', 'text/html')
-  res.end('You are (probably) ' + (isMobile ? '' : 'not ') + 'a mobile user')
-})
-```
+### `useSTD3ASCIIRules`
 
-## Testing
+Type: `boolean`
+Default value: `false`
+When set to `true`, input will be validated according to [STD3 Rules](http://unicode.org/reports/tr46/#STD3_Rules).
 
-```sh
-$ npm test
-```
+### `verifyDNSLength`
 
-## License
-
-[MIT](LICENSE)
-
-[npm-image]: https://img.shields.io/npm/v/vary.svg
-[npm-url]: https://npmjs.org/package/vary
-[node-version-image]: https://img.shields.io/node/v/vary.svg
-[node-version-url]: https://nodejs.org/en/download
-[travis-image]: https://img.shields.io/travis/jshttp/vary/master.svg
-[travis-url]: https://travis-ci.org/jshttp/vary
-[coveralls-image]: https://img.shields.io/coveralls/jshttp/vary/master.svg
-[coveralls-url]: https://coveralls.io/r/jshttp/vary
-[downloads-image]: https://img.shields.io/npm/dm/vary.svg
-[downloads-url]: https://npmjs.org/package/vary
+Type: `boolean`
+Default value: `false`
+When set to `true`, the length of each DNS label within the input will be checked for validation.
